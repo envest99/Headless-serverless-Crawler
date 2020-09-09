@@ -2,10 +2,6 @@
 //& serverless cloud (AWS lambda).
 const puppeteer = require('puppeteer');
 const fs = require('fs');
-const os = require("os");
-
-const { PendingXHR } = require('pending-xhr-puppeteer');
-const { isNull } = require('util');
 const { stringify } = require('querystring');
 
 const linklist = require('./M-Food-link_example_01052020');
@@ -14,7 +10,6 @@ baseurl = linklist.link[0];
 (async () => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage()
-    const pendingXHR = new PendingXHR(page);
 
     await page.on('response', async (response) => {
         const url = response.url()
@@ -45,27 +40,5 @@ baseurl = linklist.link[0];
         };
     });
     await page.goto(baseurl, {waitUntil: 'networkidle2'});
-
-    await page.evaluate(() => {
-        return new Promise((resolve, reject) => {
-            try {
-                var scrollTop = -1;
-                const interval = setInterval(() => {
-                    window.scrollBy(0, 100);
-                        if(document.documentElement.scrollTop !== scrollTop) {
-                            scrollTop = document.documentElement.scrollTop;
-                        return;
-                        }
-                    clearInterval(interval);
-                    resolve();
-                }, 10);
-            }    
-            catch (err) {
-            console.log(err);
-            reject(err.toString());
-            }
-        });
-    });
-    await pendingXHR.waitForAllXhrFinished();
     await browser.close();
 })()
