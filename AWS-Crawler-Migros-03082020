@@ -1,1 +1,64 @@
+var AWS = require('aws-sdk');
+var chromium = require('chrome-aws-lambda');
+var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
+var linklist = require('./M-Food-link_example_01052020');
+let baseurl = linklist.link[0];
+AWS.config.update({region: 'us-east-2'});
+//const { stringify } = require('querystring');
+//var fs = require('fs');
+//var linklist = JSON.parse(fs.readFileSync('M-Food-link_example_01052020.json'));
+console.log(baseurl);
 
+exports.handler = async (event, context, callback) => {
+  let result = null;
+  let browser = null;
+ 
+  try {
+    browser = await chromium.puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
+    });
+
+    let page = await browser.newPage()
+  
+    await page.on('response', async (response) => {
+            var url = response.url()
+            if (url.includes('/product_fragments_json')) {
+                var cont = await response.json();
+                
+                cont.forEach(function(prices) {              
+                  var params = {
+                          TableName: "2020-Migros",
+                          Item:{
+                          "ID": prices.id,
+                          "TIME": prices.id,
+                          "NAME": prices.name,
+                          "PRICE": (prices.meta.price)/100,
+                          "ORIGINAL_PRICE": (prices.meta.original_price)/100,
+                          }
+                  };
+                  
+                  docClient.put(params, function(err, data) {
+                    if (err) {
+                      console.log("Error", err);
+                    } else {
+                      console.log("Success", data);
+                    }  
+                  });  
+                });
+            };
+    });    
+    await page.goto(baseurl, {waitUntil: 'networkidle2'});
+    
+  } catch (error) {
+    return callback(error);
+  } finally {
+    if (browser !== null) {
+      await browser.close();
+    }
+  }
+  return callback(null, result);
+};
