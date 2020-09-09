@@ -1,3 +1,5 @@
+//proposed by erich.naef@envest.ch: crawling one example price page of Swiss online Supermarket Migros with headless chrome
+//& serverless cloud (AWS lambda).
 var AWS = require('aws-sdk');
 var chromium = require('chrome-aws-lambda');
 var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
