@@ -4,10 +4,6 @@ var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 var linklist = require('./M-Food-link_example_01052020');
 let baseurl = linklist.link[0];
 AWS.config.update({region: 'us-east-2'});
-//const { stringify } = require('querystring');
-//var fs = require('fs');
-//var linklist = JSON.parse(fs.readFileSync('M-Food-link_example_01052020.json'));
-console.log(baseurl);
 
 exports.handler = async (event, context, callback) => {
   let result = null;
