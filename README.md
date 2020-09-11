@@ -3,3 +3,4 @@ This crawler downloads grocery prices of Swiss online Supermarket Migros with he
 
 Setup1: VsCode/W10-2004/Node.js12.0 (puppeteer)                              
 Setup2: VsCode/W10-2004/AWS-lambda/Node.js12.0 (puppeteer,chrome-aws-lambda, aws-sdk)
+Setup3: VsCode/W10-2004/Docker/AWS-lambda/Node.js12.0 (puppeteer,chrome-aws-lambda, aws-sdk)
